@@ -9,6 +9,6 @@ The file looks like this.
 The columns marked A, B, C... are disease symptoms and each "Case" represents an actual patient. The 1's are cases where the specific symptom was present, 0's where it was not.
 
 The output is this:
-[Output](https://github.com/allengblack/DiseaseBasket/blob/master/Selection_514.png)
+![Output](https://github.com/allengblack/DiseaseBasket/blob/master/Selection_514.png)
 
 I included three sample diseases. They're the three CSV files. If anything is else is unclear, please contact me.
