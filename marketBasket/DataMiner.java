@@ -2,31 +2,36 @@ package marketBasket;
 
 import java.util.*;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-
-
-import com.opencsv.*;	
 
 public class DataMiner {
 	public static Scanner console = new Scanner(System.in);
 	public static ArrayList<Transaction> transactions = new ArrayList<Transaction>();
 	public static ArrayList<Symptom> symptoms = new ArrayList<Symptom>();
 	public static double minsupportcount = 0.0;
-	public static double confidence = 0.0;
+	public static String diseaseName = null;
+	public static String[] diseaseList = null;
 
 	public static void main(String[] args) throws Exception {
-		setSupportCountAndConfidence();
+		setDiseaseName();
+		setSupportCount();
 		getProblemFromFile();
         start();
         pauseConsole();
 	}
 	
-	private static void setSupportCountAndConfidence() {
+	private static void setSupportCount(){
 		System.out.println("Enter minimum support count: ");
 		minsupportcount = console.nextDouble();
-		System.out.println("Enter minimum confidence level: ");
-		confidence = console.nextDouble();
+	}
+	
+	private static void setDiseaseName() {
+		System.out.println("Enter disease name: ");
+		diseaseName = console.next();
+		
+		diseaseName = diseaseName.toLowerCase() + ".csv";
 	}
 
 	public static void pauseConsole()
@@ -71,7 +76,6 @@ public class DataMiner {
         {
             ArrayList<Short> values = Symptom.getValues(codes);
             System.out.println(codes + ": " + (Symptom.sumList(values)) / (double)values.size());
-//            System.out.println(codes + ": " + (Symptom.sumList(values)) / (double)values.size());
         }
     }
 
@@ -79,32 +83,40 @@ public class DataMiner {
     {
         int linecount = 1;
 
-        @SuppressWarnings("resource")
-        BufferedReader br = new BufferedReader(new FileReader("measles.csv"));
-        String line = "";
-        while ((line = br.readLine()) != null) {
-        	String[] nodes = line.split(",");
-        		if (nodes.length > 0) {
-        			if (linecount == 1)
-                    {
-                        for (int i = 1; i < nodes.length; i++)
+        try{
+        	@SuppressWarnings("resource")
+        	BufferedReader br = new BufferedReader(new FileReader(diseaseName));
+        	String line = "";
+            while ((line = br.readLine()) != null) {
+            	String[] nodes = line.split(",");
+            		if (nodes.length > 0) {
+            			if (linecount == 1)
                         {
-                            symptoms.add(new Symptom("Symptom" + i, nodes[i], i - 1));
+                            for (int i = 1; i < nodes.length; i++)
+                            {
+                                symptoms.add(new Symptom("Symptom" + i, nodes[i], i - 1));
+                            }
                         }
-                    }
-                    else
-                    {
-                        Transaction transaction = new Transaction();
-                        for (int i = 1; i < nodes.length; i++)
+                        else
                         {
-                            transaction.symptomPrescence.add(Byte.parseByte(nodes[i]));
+                            Transaction transaction = new Transaction();
+                            for (int i = 1; i < nodes.length; i++)
+                            {
+                                transaction.symptomPrescence.add(Byte.parseByte(nodes[i]));
+                            }
+                            transactions.add(transaction);
                         }
-                        transactions.add(transaction);
-                    }
-                    linecount++;
-        		}
-                
-            }
+                        linecount++;
+            		}
+                }
+        }
+        catch(FileNotFoundException e){
+        	System.out.println("Disease not found in database. Check your spelling or try another disease.");
+        	setDiseaseName();
+        	setSupportCount();
+        	getProblemFromFile();
+        }
+        
     }
 
     public static ArrayList<String> split(String str)
@@ -135,9 +147,6 @@ public class DataMiner {
                     something.add(newItem);
                     
                     something = makeArrayDistinct(something);
-                    
-                    //newItem = (something.toString()).replace(", ", "").replace("[", "").replace("]", "");
-//                    System.out.println(newItem);
                     if (lengthlimit > 0 && lengthlimit == newItem.length())
                     {
                         ret.add(newItem);
@@ -181,6 +190,5 @@ public class DataMiner {
 		String sorted = new String(a);
 		return sorted;
 	}
-
+	
 }
-

@@ -1,9 +1,6 @@
 package marketBasket;
 
 import java.util.ArrayList;
-import java.util.Collections;
-
-import static com.wagnerandade.coollection.Coollection.*;;
 
 public class Symptom {
 	
