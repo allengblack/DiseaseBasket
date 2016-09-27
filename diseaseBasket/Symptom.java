@@ -1,4 +1,4 @@
-package marketBasket;
+package diseaseBasket;
 
 import java.util.ArrayList;
 
